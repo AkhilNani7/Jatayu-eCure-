@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Virtual Consultation - HealthCare Portal{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Virtual Consultation</h1>
+
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Video Consultation Area -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Consultation with Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</h4>
+                <div>
+                    <span id="connection-status" class="badge bg-warning">Not Connected</span>
+                    <span id="call-timer" class="badge bg-secondary ms-2">00:00</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="video-container mb-2">
+                            <div id="local-video" class="rounded bg-dark d-flex justify-content-center align-items-center" style="height: 240px; position: relative;">
+                                <div class="text-center" id="local-video-placeholder">
+                                    <i class="fas fa-user-circle fa-4x text-muted mb-2"></i>
+                                    <p class="text-muted">Your camera is off</p>
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 m-2">
+                                    <span class="badge bg-dark">You</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="video-container mb-2">
+                            <div id="remote-video" class="rounded bg-dark d-flex justify-content-center align-items-center" style="height: 240px; position: relative;">
+                                <div class="text-center" id="remote-video-placeholder">
+                                    <i class="fas fa-user-md fa-4x text-muted mb-2"></i>
+                                    <p class="text-muted">Doctor's camera is off</p>
+                                </div>
+                                <div class="position-absolute bottom-0 start-0 m-2">
+                                    <span class="badge bg-dark">Dr. {{ appointment.doctor.last_name }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-center mb-4">
+                    <button id="btn-toggle-audio" class="btn btn-outline-info mx-2">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button id="btn-toggle-video" class="btn btn-outline-info mx-2">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button id="btn-share-screen" class="btn btn-outline-info mx-2">
+                        <i class="fas fa-desktop"></i>
+                    </button>
+                    <button id="btn-end-call" class="btn btn-danger mx-2">
+                        <i class="fas fa-phone-slash"></i> End Call
+                    </button>
+                </div>
+                
+                <div class="alert alert-info">
+                    <h5><i class="fas fa-info-circle me-2"></i>How to use this consultation</h5>
+                    <ol>
+                        <li>Allow camera and microphone access when prompted</li>
+                        <li>Wait for your doctor to join the call</li>
+                        <li>Use the buttons to control your audio, video, or share your screen</li>
+                        <li>If you experience technical issues, try refreshing the page or contacting support</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <!-- Chat and Notes -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="consultation-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="chat-tab" data-bs-toggle="tab" data-bs-target="#chat" type="button" role="tab" aria-controls="chat" aria-selected="true">Chat</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notes" type="button" role="tab" aria-controls="notes" aria-selected="false">Notes</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button" role="tab" aria-controls="info" aria-selected="false">Info</button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="consultation-tabs-content">
+                    <div class="tab-pane fade show active" id="chat" role="tabpanel" aria-labelledby="chat-tab">
+                        <div id="chat-messages" class="border rounded p-2 mb-3" style="height: 300px; overflow-y: auto;">
+                            <div class="text-center text-muted my-5">
+                                <i class="fas fa-comments fa-2x mb-2"></i>
+                                <p>No messages yet</p>
+                            </div>
+                        </div>
+                        <form id="chat-form">
+                            <div class="input-group">
+                                <input type="text" id="chat-input" class="form-control" placeholder="Type a message...">
+                                <button type="submit" class="btn btn-info">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="tab-pane fade" id="notes" role="tabpanel" aria-labelledby="notes-tab">
+                        <textarea id="consultation-notes" class="form-control" rows="12" placeholder="Take notes during your consultation..."></textarea>
+                        <div class="d-grid mt-3">
+                            <button id="save-notes" class="btn btn-outline-info">Save Notes</button>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="info" role="tabpanel" aria-labelledby="info-tab">
+                        <h5>Appointment Details</h5>
+                        <ul class="list-group list-group-flush mb-3">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Date
+                                <span>{{ appointment.appointment_date|format_datetime('%b %d, %Y') }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Time
+                                <span>{{ appointment.appointment_time }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Doctor
+                                <span>Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Specialty
+                                <span>{{ appointment.doctor.specialty }}</span>
+                            </li>
+                        </ul>
+                        
+                        <h5>Reason for Visit</h5>
+                        <p>{{ appointment.reason|default("No reason specified", true) }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/consultation.js') }}"></script>
+{% endblock %}

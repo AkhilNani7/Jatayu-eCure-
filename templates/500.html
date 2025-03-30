@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Server Error - HealthCare Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-center" style="min-height: 70vh;">
+    <div class="text-center">
+        <h1 class="display-1 fw-bold">500</h1>
+        <p class="fs-3"><span class="text-danger">Oops!</span> Server Error</p>
+        <p class="lead">
+            Sorry, something went wrong on our end. Please try again later.
+        </p>
+        <a href="{{ url_for('index') }}" class="btn btn-info">Go Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Medicines - HealthCare Portal{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="medicines-header py-5 mb-5 text-center page-transition-wrapper fade-in" style="background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(13, 110, 253, 0.1));">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Online Pharmacy</h1>
+        <p class="lead mb-4">Quality medicines delivered to your doorstep</p>
+        
+        <!-- Search Form -->
+        <div class="row justify-content-center">
+            <div class="col-md-10 col-lg-8">
+                <div class="card border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <form action="{{ url_for('medicines') }}" method="get" class="row g-3">
+                            <div class="col-lg-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="fas fa-search text-info animate-icon"></i>
+                                    </span>
+                                    <input type="text" class="form-control border-start-0 ps-0" id="search" name="search" placeholder="Search medicines..." value="{{ search_term|default('', true) }}">
+                                </div>
+                            </div>
+                            <div class="col-lg-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="fas fa-tag text-info animate-icon"></i>
+                                    </span>
+                                    <select name="category" id="category" class="form-select border-start-0 ps-0">
+                                        <option value="">All Categories</option>
+                                        {% for category in categories %}
+                                        <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-2">
+                                <button type="submit" class="btn btn-info w-100 shadow-sm hover-lift">
+                                    <i class="fas fa-filter me-2"></i>Search
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Status -->
+    {% if search_term or selected_category %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            {% if search_term %}
+            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 fs-6 me-2">
+                <i class="fas fa-search me-2"></i>Search: "{{ search_term }}"
+            </span>
+            {% endif %}
+            {% if selected_category %}
+            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 fs-6">
+                <i class="fas fa-tag me-2"></i>Category: {{ selected_category }}
+            </span>
+            {% endif %}
+        </div>
+        <a href="{{ url_for('medicines') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-times me-1"></i>Clear Filters
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Medicines List -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+        {% for medicine in medicines %}
+        <div class="col stagger-item fade-in">
+            <div class="card medicine-card h-100 border-0 shadow-sm overflow-hidden hover-lift">
+                <div class="card-header border-0 p-0">
+                    <div class="medicine-banner text-center py-4" style="background-color: rgba(13, 202, 240, 0.1);">
+                        <img src="{{ url_for('static', filename='svg/medicine.svg') }}" alt="{{ medicine.name }}" class="img-fluid" style="height: 100px; max-width: 100%;">
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ medicine.name }}</h5>
+                        {% if medicine.requires_prescription %}
+                        <span class="badge bg-warning text-dark prescription-badge">Rx</span>
+                        {% endif %}
+                    </div>
+                    <p class="card-text text-muted small mb-3">{{ medicine.generic_name }}</p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 hover-zoom">{{ medicine.category }}</span>
+                        <span class="medicine-price fs-5 fw-bold">${{ "%.2f"|format(medicine.price) }}</span>
+                    </div>
+                    
+                    <div class="medicine-availability mb-3">
+                        <div class="d-flex align-items-center">
+                            <span class="{% if medicine.stock_quantity > 10 %}text-success{% elif medicine.stock_quantity > 0 %}text-warning{% else %}text-danger{% endif %} small">
+                                {% if medicine.stock_quantity > 10 %}
+                                <i class="fas fa-check-circle me-1 animate-icon"></i>In Stock
+                                {% elif medicine.stock_quantity > 0 %}
+                                <i class="fas fa-exclamation-circle me-1 animate-icon"></i>Low Stock ({{ medicine.stock_quantity }})
+                                {% else %}
+                                <i class="fas fa-times-circle me-1 animate-icon"></i>Out of Stock
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{{ url_for('medicine_detail', medicine_id=medicine.id) }}" class="btn btn-info btn-sm hover-lift">
+                            <i class="fas fa-info-circle me-1"></i> View Details
+                        </a>
+                        
+                        {% if current_user.is_authenticated %}
+                            {% if medicine.stock_quantity > 0 %}
+                                <form action="{{ url_for('add_to_cart') }}" method="post">
+                                    <input type="hidden" name="medicine_id" value="{{ medicine.id }}">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <button type="submit" class="btn btn-outline-info btn-sm w-100 hover-lift" 
+                                            {% if medicine.requires_prescription and not has_prescription %}disabled{% endif %}>
+                                        {% if medicine.requires_prescription and not has_prescription %}
+                                        <i class="fas fa-prescription me-1"></i> Prescription Required
+                                        {% else %}
+                                        <i class="fas fa-cart-plus me-1"></i> Add to Cart
+                                        {% endif %}
+                                    </button>
+                                </form>
+                            {% else %}
+                                <button class="btn btn-outline-secondary btn-sm" disabled>
+                                    <i class="fas fa-times-circle me-1"></i> Out of Stock
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-info btn-sm hover-lift">
+                                <i class="fas fa-sign-in-alt me-1"></i> Login to Purchase
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5 fade-in">
+            <div class="mb-4">
+                <i class="fas fa-prescription-bottle-alt fa-4x text-info opacity-50 bounce-animation"></i>
+            </div>
+            <h4 class="mb-3">No medicines found matching your criteria</h4>
+            <p class="text-muted mb-4">Try different search terms or browse all medicines</p>
+            <a href="{{ url_for('medicines') }}" class="btn btn-outline-info btn-lg px-4 hover-lift">
+                <i class="fas fa-sync-alt me-2 rotate-animation"></i>View All Medicines
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Information Sections -->
+    <div class="row mb-5">
+        <div class="col-md-6 mb-4 slide-in-left fade-in">
+            <div class="card border-0 shadow-sm h-100 hover-lift">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-container me-3">
+                            <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center hover-rotate-icon" style="width: 50px; height: 50px;">
+                                <i class="fas fa-truck text-info fa-lg"></i>
+                            </div>
+                        </div>
+                        <h3 class="card-title fs-4 mb-0">Delivery Information</h3>
+                    </div>
+                    <div class="card-text">
+                        <ul class="list-unstyled">
+                            <li class="mb-3 stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Free delivery on orders above $50
+                            </li>
+                            <li class="mb-3 stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Standard delivery: 1-3 business days
+                            </li>
+                            <li class="mb-3 stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Express delivery available for urgent medications
+                            </li>
+                            <li class="stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Secure packaging ensures medicine quality
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4 slide-in-right fade-in">
+            <div class="card border-0 shadow-sm h-100 hover-lift">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="icon-container me-3">
+                            <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center hover-rotate-icon" style="width: 50px; height: 50px;">
+                                <i class="fas fa-prescription-bottle text-info fa-lg"></i>
+                            </div>
+                        </div>
+                        <h3 class="card-title fs-4 mb-0">Prescription Medicines</h3>
+                    </div>
+                    <div class="card-text">
+                        <p>Some medications require a valid prescription from a licensed healthcare provider. For prescription medicines:</p>
+                        <ul class="list-unstyled">
+                            <li class="mb-3 stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Upload your prescription during checkout
+                            </li>
+                            <li class="mb-3 stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> Consult with our doctors to get a new prescription
+                            </li>
+                            <li class="stagger-item">
+                                <i class="fas fa-check-circle text-success me-2 animate-icon"></i> All prescriptions are verified by licensed pharmacists
+                            </li>
+                        </ul>
+                        <a href="{{ url_for('doctors') }}" class="btn btn-outline-info mt-2 hover-lift">
+                            <i class="fas fa-user-md me-2"></i>Consult a Doctor
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/medicines.js') }}"></script>
+{% endblock %}

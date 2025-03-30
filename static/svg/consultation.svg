@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="90" fill="#212529" stroke="#0dcaf0" stroke-width="2"/>
+  
+  <!-- Computer/Device -->
+  <rect x="50" y="70" width="100" height="70" rx="5" ry="5" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  <rect x="55" y="75" width="90" height="55" rx="2" ry="2" fill="#6c757d"/>
+  
+  <!-- Person in screen -->
+  <circle cx="100" cy="95" r="15" fill="#0dcaf0"/>
+  <path d="M80 125 a20,20 0 0,1 40,0" fill="#0dcaf0"/>
+  
+  <!-- Doctor stethoscope -->
+  <circle cx="60" cy="50" r="10" fill="#0dcaf0"/>
+  <path d="M60 60 C 60,70 70,80 85,85" stroke="#0dcaf0" stroke-width="3" fill="none"/>
+  <path d="M60 60 L 55 70" stroke="#0dcaf0" stroke-width="3" fill="none"/>
+  <path d="M60 60 L 65 70" stroke="#0dcaf0" stroke-width="3" fill="none"/>
+  
+  <!-- Video call wave lines -->
+  <path d="M140 60 q 5,-5 10,0 q 5,5 10,0 q 5,-5 10,0" stroke="#0dcaf0" stroke-width="2" fill="none"/>
+  <path d="M140 70 q 5,-5 10,0 q 5,5 10,0 q 5,-5 10,0" stroke="#0dcaf0" stroke-width="2" fill="none"/>
+  <path d="M140 80 q 5,-5 10,0 q 5,5 10,0 q 5,-5 10,0" stroke="#0dcaf0" stroke-width="2" fill="none"/>
+  
+  <!-- Stand/Base -->
+  <path d="M80 140 h40 l-10 20 h-20 z" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  <rect x="95" y="160" width="10" height="5" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+</svg>

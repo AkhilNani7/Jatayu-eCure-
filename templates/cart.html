@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Shopping Cart - HealthCare Portal{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Shopping Cart</h1>
+
+{% if cart_items %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Cart Items ({{ cart_items|length }})</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Medicine</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>
+                                    <a href="{{ url_for('medicine_detail', medicine_id=item.medicine.id) }}" class="text-decoration-none">
+                                        {{ item.medicine.name }}
+                                    </a>
+                                    {% if item.medicine.requires_prescription %}
+                                    <span class="badge bg-warning text-dark ms-1">Prescription</span>
+                                    {% endif %}
+                                </td>
+                                <td>${{ "%.2f"|format(item.medicine.price) }}</td>
+                                <td>
+                                    <form action="{{ url_for('update_cart') }}" method="post" class="d-flex align-items-center">
+                                        <input type="hidden" name="cart_item_id" value="{{ item.id }}">
+                                        <input type="number" name="quantity" class="form-control form-control-sm" 
+                                               value="{{ item.quantity }}" min="1" max="{{ item.medicine.stock_quantity }}" 
+                                               style="width: 60px;">
+                                        <button type="submit" class="btn btn-sm btn-outline-info ms-2">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>${{ "%.2f"|format(item.medicine.price * item.quantity) }}</td>
+                                <td>
+                                    <form action="{{ url_for('remove_from_cart', cart_item_id=item.id) }}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i> Remove
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Order Summary</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Subtotal</span>
+                    <span>${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Shipping</span>
+                    <span>$0.00</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold">Total</span>
+                    <span class="fw-bold">${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-grid">
+                    <a href="{{ url_for('checkout') }}" class="btn btn-info">Proceed to Checkout</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5>Need Prescription?</h5>
+                <p class="mb-2">Some medicines require a valid prescription. Book an appointment with one of our doctors.</p>
+                <a href="{{ url_for('doctors') }}" class="btn btn-outline-secondary w-100">Find a Doctor</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <div class="mb-4">
+            <i class="fas fa-shopping-cart fa-4x text-muted"></i>
+        </div>
+        <h3>Your cart is empty</h3>
+        <p class="text-muted">Browse our medicines and add items to your cart.</p>
+        <a href="{{ url_for('medicines') }}" class="btn btn-info mt-3">Shop Medicines</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% endblock %}

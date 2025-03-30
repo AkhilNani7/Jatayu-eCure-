@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="90" fill="#212529" stroke="#0dcaf0" stroke-width="2"/>
+  
+  <!-- Doctor's head -->
+  <circle cx="100" cy="65" r="25" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  
+  <!-- Doctor's face -->
+  <circle cx="90" cy="60" r="3" fill="#0dcaf0"/>
+  <circle cx="110" cy="60" r="3" fill="#0dcaf0"/>
+  <path d="M90 75 q 10,5 20,0" stroke="#0dcaf0" stroke-width="2" fill="none"/>
+  
+  <!-- Doctor's hair -->
+  <path d="M75 55 q 0,-20 25,-20 q 25,0 25,20" stroke="#6c757d" stroke-width="4" fill="none"/>
+  
+  <!-- Doctor's body -->
+  <path d="M75 90 v45 h50 v-45" fill="#0dcaf0"/>
+  <rect x="75" y="90" width="50" height="15" fill="#0dcaf0"/>
+  
+  <!-- Doctor's coat -->
+  <path d="M75 90 l-15 45 h15 v-45" fill="#f8f9fa"/>
+  <path d="M125 90 l15 45 h-15 v-45" fill="#f8f9fa"/>
+  
+  <!-- Stethoscope -->
+  <circle cx="70" cy="110" r="8" fill="#212529" stroke="#dee2e6" stroke-width="2"/>
+  <path d="M70 118 q 15,10 30,-5" stroke="#dee2e6" stroke-width="2" fill="none"/>
+  <path d="M100 113 q 5,-5 0,-10 h-25" stroke="#dee2e6" stroke-width="2" fill="none"/>
+  
+  <!-- Doctor's arms -->
+  <path d="M75 100 q -15,15 -20,40" stroke="#343a40" stroke-width="5" fill="none"/>
+  <path d="M125 100 q 15,15 20,40" stroke="#343a40" stroke-width="5" fill="none"/>
+  
+  <!-- Medical cross symbol -->
+  <rect x="90" y="100" width="20" height="5" fill="#f8f9fa"/>
+  <rect x="97.5" y="95" width="5" height="15" fill="#f8f9fa"/>
+  
+  <!-- Doctor's neck -->
+  <path d="M90 90 h20" stroke="#343a40" stroke-width="5" fill="none"/>
+</svg>

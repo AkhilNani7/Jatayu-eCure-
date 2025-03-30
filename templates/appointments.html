@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}My Appointments - HealthCare Portal{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Appointments</h1>
+
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Upcoming Appointments</h4>
+        <a href="{{ url_for('doctors') }}" class="btn btn-outline-info btn-sm">
+            <i class="fas fa-plus me-1"></i>Book New Appointment
+        </a>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set has_upcoming = false %}
+                    {% for appointment in appointments %}
+                        {% if appointment.appointment_date >= today and appointment.status != 'cancelled' %}
+                        {% set has_upcoming = true %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('doctor_detail', doctor_id=appointment.doctor.id) }}" class="text-decoration-none">
+                                    Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}
+                                </a>
+                                <div><small class="text-muted">{{ appointment.doctor.specialty }}</small></div>
+                            </td>
+                            <td>
+                                <div>{{ appointment.appointment_date|format_datetime('%b %d, %Y') }}</div>
+                                <small>{{ appointment.appointment_time }}</small>
+                            </td>
+                            <td>
+                                {% if appointment.is_virtual %}
+                                <span class="badge bg-info">Virtual</span>
+                                {% else %}
+                                <span class="badge bg-secondary">In-person</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if appointment.status == 'scheduled' %}bg-success{% elif appointment.status == 'completed' %}bg-info{% else %}bg-warning{% endif %}">
+                                    {{ appointment.status|capitalize }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="d-flex">
+                                    {% if appointment.is_virtual and appointment.appointment_date == today and appointment.status == 'scheduled' %}
+                                    <a href="{{ url_for('consultation', appointment_id=appointment.id) }}" class="btn btn-sm btn-info me-2">
+                                        <i class="fas fa-video me-1"></i>Join
+                                    </a>
+                                    {% endif %}
+                                    
+                                    {% if appointment.status == 'scheduled' %}
+                                    <form action="{{ url_for('cancel_appointment', appointment_id=appointment.id) }}" method="post">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Are you sure you want to cancel this appointment?')">
+                                            <i class="fas fa-times me-1"></i>Cancel
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if not has_upcoming %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                                <p>You don't have any upcoming appointments.</p>
+                                <a href="{{ url_for('doctors') }}" class="btn btn-outline-info btn-sm">Book an Appointment</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Past Appointments</h4>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% set has_past = false %}
+                    {% for appointment in appointments %}
+                        {% if appointment.appointment_date < today or appointment.status == 'cancelled' or appointment.status == 'completed' %}
+                        {% set has_past = true %}
+                        <tr>
+                            <td>
+                                <a href="{{ url_for('doctor_detail', doctor_id=appointment.doctor.id) }}" class="text-decoration-none">
+                                    Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}
+                                </a>
+                                <div><small class="text-muted">{{ appointment.doctor.specialty }}</small></div>
+                            </td>
+                            <td>
+                                <div>{{ appointment.appointment_date|format_datetime('%b %d, %Y') }}</div>
+                                <small>{{ appointment.appointment_time }}</small>
+                            </td>
+                            <td>
+                                {% if appointment.is_virtual %}
+                                <span class="badge bg-info">Virtual</span>
+                                {% else %}
+                                <span class="badge bg-secondary">In-person</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge {% if appointment.status == 'scheduled' %}bg-success{% elif appointment.status == 'completed' %}bg-info{% elif appointment.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                    {{ appointment.status|capitalize }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if not has_past %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4">
+                            <div class="text-muted">
+                                <i class="fas fa-history fa-2x mb-2"></i>
+                                <p>You don't have any past appointments.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set today's date for comparison in the template
+        window.today = new Date().toISOString().split('T')[0];
+    });
+</script>
+{% endblock %}

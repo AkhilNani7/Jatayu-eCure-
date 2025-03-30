@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors - HealthCare Portal{% endblock %}
+
+{% block content %}
+<!-- Header Section -->
+<div class="doctors-header py-5 mb-5 text-center page-transition-wrapper fade-in" style="background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(13, 110, 253, 0.1));">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-3">Find Your Specialist</h1>
+        <p class="lead mb-4">Connect with experienced healthcare professionals across various specialties</p>
+        
+        <!-- Specialty Filter -->
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card border-0 shadow-sm hover-lift">
+                    <div class="card-body p-4">
+                        <form action="{{ url_for('doctors') }}" method="get" class="row g-3">
+                            <div class="col-md-8">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0">
+                                        <i class="fas fa-stethoscope text-info animate-icon"></i>
+                                    </span>
+                                    <select name="specialty" class="form-select border-start-0 ps-0">
+                                        <option value="">All Specialties</option>
+                                        {% for specialty in specialties %}
+                                        <option value="{{ specialty }}" {% if selected_specialty == specialty %}selected{% endif %}>{{ specialty }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="submit" class="btn btn-info w-100 shadow-sm hover-lift">
+                                    <i class="fas fa-filter me-2"></i>Filter
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Status -->
+    {% if selected_specialty %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 fs-6">
+                <i class="fas fa-filter me-2"></i>Filtered by: {{ selected_specialty }}
+            </span>
+        </div>
+        <a href="{{ url_for('doctors') }}" class="btn btn-sm btn-outline-secondary">
+            <i class="fas fa-times me-1"></i>Clear Filter
+        </a>
+    </div>
+    {% endif %}
+    
+    <!-- Doctors List -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+        {% for doctor in doctors %}
+        <div class="col stagger-item slide-in-right">
+            <div class="card doctor-card h-100 border-0 shadow-sm overflow-hidden hover-lift">
+                <div class="card-body p-0">
+                    <div class="doctor-banner p-4 text-light" style="background: linear-gradient(135deg, #0dcaf0, #0d6efd);">
+                        <div class="d-flex">
+                            <div class="doctor-avatar-container">
+                                <div class="doctor-avatar rounded-circle bg-light d-inline-flex justify-content-center align-items-center" style="width: 90px; height: 90px; border: 3px solid white;">
+                                    <i class="fas fa-user-md fa-2x text-info animate-icon"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="card-title mb-1">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h4>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill hover-zoom">{{ doctor.specialty }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-star text-warning me-1 animate-icon"></i>
+                                    <small class="text-light">{{ doctor.experience_years }} years experience</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="doctor-info mb-4">
+                            <div class="d-flex align-items-center mb-2 stagger-item">
+                                <div class="icon-container me-3">
+                                    <i class="fas fa-graduation-cap text-info animate-icon"></i>
+                                </div>
+                                <div>{{ doctor.qualification }}</div>
+                            </div>
+                            <div class="d-flex align-items-center stagger-item">
+                                <div class="icon-container me-3">
+                                    <i class="fas fa-dollar-sign text-info animate-icon"></i>
+                                </div>
+                                <div class="medicine-price">${{ "%.2f"|format(doctor.consultation_fee) }} per consultation</div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('doctor_detail', doctor_id=doctor.id) }}" class="btn btn-info px-4 hover-lift">
+                                <i class="fas fa-user-md me-2"></i>View Profile
+                            </a>
+                            {% if current_user.is_authenticated %}
+                            <a href="{{ url_for('doctor_detail', doctor_id=doctor.id) }}#booking" class="btn btn-outline-info hover-lift">
+                                <i class="fas fa-calendar-plus me-2"></i>Book
+                            </a>
+                            {% else %}
+                            <a href="{{ url_for('login') }}" class="btn btn-outline-info hover-lift">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login to Book
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5 fade-in">
+            <div class="mb-4">
+                <i class="fas fa-search fa-4x text-info opacity-50 bounce-animation"></i>
+            </div>
+            <h4 class="mb-3">No doctors found matching your criteria</h4>
+            <p class="text-muted mb-4">Try selecting a different specialty or clear your filters</p>
+            <a href="{{ url_for('doctors') }}" class="btn btn-outline-info btn-lg px-4 hover-lift">
+                <i class="fas fa-sync-alt me-2 rotate-animation"></i>View All Doctors
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Benefits Section -->
+    <div class="row g-4 py-5 mb-5">
+        <div class="col-lg-6 slide-in-left fade-in">
+            <div class="feature-card p-4 border-0 shadow-sm rounded-3 h-100 hover-lift">
+                <div class="d-flex">
+                    <div class="feature-icon-container me-4">
+                        <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center hover-rotate-icon" style="width: 60px; height: 60px;">
+                            <i class="fas fa-medal text-info fa-2x"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="fs-4 mb-3">Expert Specialists</h3>
+                        <p class="mb-0">All our doctors are certified professionals with years of experience in their respective fields, ensuring you receive the highest quality care.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6 slide-in-right fade-in">
+            <div class="feature-card p-4 border-0 shadow-sm rounded-3 h-100 hover-lift">
+                <div class="d-flex">
+                    <div class="feature-icon-container me-4">
+                        <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center hover-rotate-icon" style="width: 60px; height: 60px;">
+                            <i class="fas fa-video text-info fa-2x"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="fs-4 mb-3">Virtual Consultations</h3>
+                        <p class="mb-0">Connect with our healthcare professionals from the comfort of your home with our secure video conferencing platform.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/doctors.js') }}"></script>
+{% endblock %}

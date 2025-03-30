@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block title %}{{ medicine.name }} - HealthCare Portal{% endblock %}
+
+{% block content %}
+<!-- Medicine Header Banner -->
+<div class="medicine-detail-header py-5 mb-5" style="background: linear-gradient(135deg, rgba(13, 202, 240, 0.1), rgba(13, 110, 253, 0.1));">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-2 text-center mb-4 mb-md-0">
+                <div class="medicine-image bg-white rounded-circle shadow d-inline-flex justify-content-center align-items-center" style="width: 150px; height: 150px; border: 3px solid rgba(13, 202, 240, 0.3);">
+                    <img src="{{ url_for('static', filename='svg/medicine.svg') }}" alt="{{ medicine.name }}" class="img-fluid" style="height: 90px; max-width: 90px;">
+                </div>
+            </div>
+            <div class="col-md-7">
+                <h1 class="display-5 fw-bold mb-2">{{ medicine.name }}</h1>
+                <p class="lead text-muted mb-3">{{ medicine.generic_name }}</p>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="badge bg-info px-3 py-2">{{ medicine.category }}</span>
+                    <span class="badge bg-secondary px-3 py-2">{{ medicine.dosage }}</span>
+                    {% if medicine.requires_prescription %}
+                    <span class="badge bg-warning text-dark px-3 py-2">
+                        <i class="fas fa-prescription me-1"></i> Prescription Required
+                    </span>
+                    {% endif %}
+                </div>
+                <div class="medicine-status mb-2">
+                    <span class="fs-4 fw-bold text-info me-3">${{ "%.2f"|format(medicine.price) }}</span>
+                    <span class="{% if medicine.stock_quantity > 10 %}text-success{% elif medicine.stock_quantity > 0 %}text-warning{% else %}text-danger{% endif %}">
+                        {% if medicine.stock_quantity > 10 %}
+                        <i class="fas fa-check-circle me-1"></i>In Stock ({{ medicine.stock_quantity }} available)
+                        {% elif medicine.stock_quantity > 0 %}
+                        <i class="fas fa-exclamation-circle me-1"></i>Low Stock ({{ medicine.stock_quantity }} left)
+                        {% else %}
+                        <i class="fas fa-times-circle me-1"></i>Out of Stock
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-3 text-md-end mt-4 mt-md-0">
+                {% if medicine.stock_quantity > 0 and current_user.is_authenticated %}
+                <a href="#purchase" class="btn btn-info btn-lg px-4 shadow-sm">
+                    <i class="fas fa-shopping-cart me-2"></i> Purchase Now
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row">
+        <!-- Medicine Information -->
+        <div class="col-lg-8">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <!-- Medicine Description -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body p-4">
+                            <h3 class="card-title fs-4 mb-4">
+                                <i class="fas fa-info-circle text-info me-2"></i>
+                                Description
+                            </h3>
+                            <div class="card-text">
+                                <p class="mb-0">{{ medicine.description|default("No description available for this medicine.", true) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4 mb-4">
+                <!-- Manufacturer Card -->
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mb-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-industry text-info fa-lg"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Manufacturer</h5>
+                            <p class="card-text">{{ medicine.manufacturer|default("Not specified", true) }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Dosage Card -->
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mb-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-prescription-bottle text-info fa-lg"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Dosage</h5>
+                            <p class="card-text">{{ medicine.dosage|default("Not specified", true) }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Stock Card -->
+                <div class="col">
+                    <div class="card h-100 border-0 shadow-sm">
+                        <div class="card-body p-4 text-center">
+                            <div class="icon-container mb-3">
+                                <div class="rounded-circle bg-info bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-warehouse text-info fa-lg"></i>
+                                </div>
+                            </div>
+                            <h5 class="card-title">Availability</h5>
+                            <p class="card-text {% if medicine.stock_quantity > 10 %}text-success{% elif medicine.stock_quantity > 0 %}text-warning{% else %}text-danger{% endif %}">
+                                {% if medicine.stock_quantity > 10 %}
+                                <i class="fas fa-check-circle me-1"></i>In Stock
+                                {% elif medicine.stock_quantity > 0 %}
+                                <i class="fas fa-exclamation-circle me-1"></i>Low Stock
+                                {% else %}
+                                <i class="fas fa-times-circle me-1"></i>Out of Stock
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Side Effects -->
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-body p-4">
+                    <h3 class="card-title fs-4 mb-4">
+                        <i class="fas fa-exclamation-triangle text-info me-2"></i>
+                        Side Effects
+                    </h3>
+                    <div class="card-text">
+                        <p class="mb-0">{{ medicine.side_effects|default("No side effects listed for this medication.", true) }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if medicine.requires_prescription %}
+            <!-- Prescription Information -->
+            <div class="card border-0 shadow-sm mb-4 border-warning">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="icon-container me-3">
+                            <div class="rounded-circle bg-warning bg-opacity-10 d-inline-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                                <i class="fas fa-file-prescription text-warning fa-lg"></i>
+                            </div>
+                        </div>
+                        <h3 class="card-title fs-4 mb-0 text-warning">
+                            Prescription Required
+                        </h3>
+                    </div>
+                    <div class="card-text">
+                        <p>This medicine requires a valid prescription from a licensed healthcare provider. You can:</p>
+                        <ul>
+                            <li>Upload your prescription during checkout</li>
+                            <li>Book an appointment with one of our doctors to obtain a prescription</li>
+                            <li>Use an existing prescription if you have already consulted with our doctors</li>
+                        </ul>
+                        <a href="{{ url_for('doctors') }}" class="btn btn-outline-warning mt-2">
+                            <i class="fas fa-user-md me-2"></i>Consult a Doctor
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Purchase Form -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;" id="purchase">
+                <div class="card-header bg-info text-white p-4 border-0">
+                    <h3 class="card-title fs-4 mb-0">
+                        <i class="fas fa-shopping-cart me-2"></i>
+                        Add to Cart
+                    </h3>
+                </div>
+                <div class="card-body p-4">
+                    {% if current_user.is_authenticated %}
+                        {% if medicine.stock_quantity > 0 %}
+                            <form action="{{ url_for('add_to_cart') }}" method="post">
+                                <input type="hidden" name="medicine_id" value="{{ medicine.id }}">
+                                
+                                <div class="mb-4">
+                                    <label for="quantity" class="form-label fw-bold">Quantity</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-hashtag text-info"></i>
+                                        </span>
+                                        <input type="number" class="form-control border-start-0 ps-0" id="quantity" name="quantity" value="1" min="1" max="{{ medicine.stock_quantity }}">
+                                    </div>
+                                    <small class="form-text text-muted">Maximum available: {{ medicine.stock_quantity }}</small>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Price per Unit</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-tag text-info"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0" value="${{ "%.2f"|format(medicine.price) }}" disabled>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Total Amount</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-light border-end-0">
+                                            <i class="fas fa-dollar-sign text-info"></i>
+                                        </span>
+                                        <input type="text" class="form-control border-start-0 ps-0 fw-bold text-success" id="total_price" value="${{ "%.2f"|format(medicine.price) }}" disabled>
+                                    </div>
+                                </div>
+                                
+                                {% if medicine.requires_prescription %}
+                                <div class="alert alert-warning mb-4 d-flex align-items-center">
+                                    <i class="fas fa-prescription fa-lg me-3"></i>
+                                    <div>
+                                        <strong>Prescription Required</strong><br>
+                                        <small>You will need to upload a valid prescription during checkout.</small>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-info btn-lg text-white shadow-sm">
+                                        <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                    </button>
+                                </div>
+                            </form>
+                        {% else %}
+                            <div class="text-center p-4">
+                                <div class="icon-placeholder mb-3">
+                                    <i class="fas fa-times-circle fa-3x text-danger opacity-50"></i>
+                                </div>
+                                <h5 class="mb-3">Out of Stock</h5>
+                                <p class="text-muted mb-4">We're sorry, this medicine is currently unavailable. Please check back later or browse similar products.</p>
+                                <div class="d-grid">
+                                    <a href="{{ url_for('medicines') }}" class="btn btn-outline-info">
+                                        <i class="fas fa-pills me-2"></i>Browse Other Medicines
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center p-4">
+                            <div class="icon-placeholder mb-3">
+                                <i class="fas fa-user-lock fa-3x text-info opacity-50"></i>
+                            </div>
+                            <h5 class="mb-3">Login Required</h5>
+                            <p class="text-muted mb-4">You need to be logged in to purchase this medicine.</p>
+                            <div class="d-grid gap-2">
+                                <a href="{{ url_for('login') }}" class="btn btn-info text-white mb-2">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                </a>
+                                <a href="{{ url_for('register') }}" class="btn btn-outline-info">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Related Medicines -->
+            {% if related_medicines %}
+            <div class="card border-0 shadow-sm mt-4">
+                <div class="card-header border-0 bg-info bg-opacity-10 p-4">
+                    <h3 class="card-title fs-5 mb-0">
+                        <i class="fas fa-tags text-info me-2"></i>
+                        Related Medicines
+                    </h3>
+                </div>
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush">
+                        {% for related in related_medicines %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center p-3 border-0 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="icon-container me-3">
+                                    <div class="rounded-circle bg-light d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                                        <i class="fas fa-pills text-info"></i>
+                                    </div>
+                                </div>
+                                <a href="{{ url_for('medicine_detail', medicine_id=related.id) }}" class="text-decoration-none text-reset">
+                                    {{ related.name }}
+                                </a>
+                            </div>
+                            <span class="badge bg-info text-white rounded-pill px-3 py-2">${{ "%.2f"|format(related.price) }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent border-0 text-center p-3">
+                    <a href="{{ url_for('medicines') }}" class="btn btn-sm btn-outline-info">
+                        <i class="fas fa-search me-2"></i>View All Medicines
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('quantity');
+        const totalPriceInput = document.getElementById('total_price');
+        const price = {{ medicine.price }};
+        
+        if (quantityInput && totalPriceInput) {
+            // Update total price when quantity changes
+            quantityInput.addEventListener('input', function() {
+                const quantity = parseInt(this.value) || 0;
+                const total = (price * quantity).toFixed(2);
+                totalPriceInput.value = '$' + total;
+            });
+            
+            // Initial calculation
+            const quantity = parseInt(quantityInput.value) || 0;
+            const total = (price * quantity).toFixed(2);
+            totalPriceInput.value = '$' + total;
+        }
+    });
+</script>
+{% endblock %}

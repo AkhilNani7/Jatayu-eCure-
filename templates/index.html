@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Home - HealthCare Portal{% endblock %}
+
+{% block content %}
+<div class="hero-section position-relative overflow-hidden p-5 mb-5 text-center bg-dark">
+    <div class="col-md-8 mx-auto">
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-lg-start">
+                <h1 class="display-4 fw-bold text-info mb-4">Your Health, Our Priority</h1>
+                <p class="fs-4 mb-4 text-light">Access top doctors, order medicines, and get virtual consultations all in one place.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-lg-start mb-5">
+                    <a href="{{ url_for('doctors') }}" class="btn btn-info btn-lg px-4 me-sm-3 pulse-animation">Find a Doctor</a>
+                    <a href="{{ url_for('medicines') }}" class="btn btn-outline-light btn-lg px-4">Buy Medicines</a>
+                </div>
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="hero-image-container text-center p-4">
+                    <img src="{{ url_for('static', filename='svg/consultation.svg') }}" alt="Healthcare" class="img-fluid" style="max-height: 240px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Wave divider at the bottom of the hero -->
+    <div class="position-absolute bottom-0 start-0 w-100 overflow-hidden" style="height: 40px;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 100" preserveAspectRatio="none" style="height: 100%; width: 100%;">
+            <path fill="var(--bs-body-bg)" fill-opacity="1" d="M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,100L1360,100C1280,100,1120,100,960,100C800,100,640,100,480,100C320,100,160,100,80,100L0,100Z"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="container px-4 py-5 page-transition-wrapper">
+    <div class="text-center mb-5 fade-in">
+        <h2 class="display-5 fw-bold">Our Services</h2>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">We offer comprehensive healthcare services to meet all your medical needs</p>
+        </div>
+    </div>
+    <div class="row g-4 py-3 row-cols-1 row-cols-lg-3">
+        <div class="col stagger-item fade-in">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon-container mb-4">
+                        <div class="icon-bg d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 hover-rotate-icon" style="width: 80px; height: 80px;">
+                            <i class="fas fa-user-md fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <h3 class="fs-4 fw-bold mb-3">Find Doctors</h3>
+                    <p class="mb-4">Browse through our list of qualified healthcare professionals and specialists with verified credentials.</p>
+                    <a href="{{ url_for('doctors') }}" class="btn btn-info btn-sm px-4 py-2">
+                        <i class="fas fa-search me-1"></i> Find a Doctor
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col stagger-item fade-in">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon-container mb-4">
+                        <div class="icon-bg d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 hover-rotate-icon" style="width: 80px; height: 80px;">
+                            <i class="fas fa-pills fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <h3 class="fs-4 fw-bold mb-3">Order Medicines</h3>
+                    <p class="mb-4">Purchase quality medicines with prescription and get them delivered to your doorstep within 24-48 hours.</p>
+                    <a href="{{ url_for('medicines') }}" class="btn btn-info btn-sm px-4 py-2">
+                        <i class="fas fa-shopping-cart me-1"></i> Shop Medicines
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="col stagger-item fade-in">
+            <div class="card h-100 border-0 shadow-sm hover-lift">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon-container mb-4">
+                        <div class="icon-bg d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 hover-rotate-icon" style="width: 80px; height: 80px;">
+                            <i class="fas fa-video fa-2x text-info"></i>
+                        </div>
+                    </div>
+                    <h3 class="fs-4 fw-bold mb-3">Virtual Consultations</h3>
+                    <p class="mb-4">Connect with doctors virtually from the comfort of your home, with secure video conferencing.</p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('appointments') }}" class="btn btn-info btn-sm px-4 py-2">
+                        <i class="fas fa-calendar-check me-1"></i> My Appointments
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn btn-info btn-sm px-4 py-2">
+                        <i class="fas fa-sign-in-alt me-1"></i> Login to Book
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Featured Doctors -->
+<div class="container px-4 py-5 page-transition-wrapper">
+    <div class="text-center mb-5 fade-in">
+        <h2 class="display-5 fw-bold">Meet Our Specialists</h2>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Consult with experienced healthcare professionals in various specialties</p>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 py-3">
+        {% for doctor in doctors %}
+        <div class="col stagger-item slide-in-right">
+            <div class="card doctor-card h-100 border-0 shadow-sm overflow-hidden hover-lift">
+                <div class="card-body p-0">
+                    <div class="doctor-banner p-4 text-light" style="background: linear-gradient(135deg, #0dcaf0, #0d6efd);">
+                        <div class="d-flex">
+                            <div class="doctor-avatar-container">
+                                <div class="doctor-avatar rounded-circle bg-light d-inline-flex justify-content-center align-items-center" style="width: 90px; height: 90px; border: 3px solid white;">
+                                    <i class="fas fa-user-md fa-2x text-info"></i>
+                                </div>
+                            </div>
+                            <div class="ms-3">
+                                <h4 class="card-title mb-1">Dr. {{ doctor.first_name }} {{ doctor.last_name }}</h4>
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="badge bg-light text-dark px-3 py-2 rounded-pill">{{ doctor.specialty }}</span>
+                                </div>
+                                <div class="d-flex align-items-center mb-1">
+                                    <i class="fas fa-star text-warning me-1 animate-icon"></i>
+                                    <small class="text-light">{{ doctor.experience_years }} years experience</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <p class="card-text">{{ doctor.bio|truncate(100) }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="medicine-price">${{ "%.2f"|format(doctor.consultation_fee) }} / consultation</span>
+                            <a href="{{ url_for('doctor_detail', doctor_id=doctor.id) }}" class="btn btn-info btn-sm">
+                                <i class="fas fa-user-md me-1"></i> View Profile
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-5 fade-in">
+        <a href="{{ url_for('doctors') }}" class="btn btn-outline-info btn-lg px-5 hover-lift">
+            <i class="fas fa-search me-2"></i> Find More Doctors
+        </a>
+    </div>
+</div>
+
+<!-- Popular Medicines -->
+<div class="container px-4 py-5 page-transition-wrapper">
+    <div class="text-center mb-5 fade-in">
+        <h2 class="display-5 fw-bold">Popular Medicines</h2>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Quality healthcare products delivered to your doorstep</p>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 py-3">
+        {% for medicine in medicines %}
+        <div class="col stagger-item slide-in-left">
+            <div class="card medicine-card h-100 border-0 shadow-sm overflow-hidden hover-lift">
+                <div class="card-header border-0 p-0">
+                    <div class="medicine-banner text-center py-4" style="background-color: rgba(13, 202, 240, 0.1);">
+                        <img src="{{ url_for('static', filename='svg/medicine.svg') }}" alt="{{ medicine.name }}" class="img-fluid" style="height: 100px; max-width: 100%;">
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">{{ medicine.name }}</h5>
+                        {% if medicine.requires_prescription %}
+                        <span class="badge bg-warning text-dark prescription-badge">Rx</span>
+                        {% endif %}
+                    </div>
+                    <p class="card-text text-muted small mb-3">{{ medicine.generic_name }}</p>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="badge bg-info bg-opacity-10 text-info px-3 py-2 hover-zoom">{{ medicine.category }}</span>
+                        <span class="medicine-price">${{ "%.2f"|format(medicine.price) }}</span>
+                    </div>
+                    <div class="medicine-description mb-3">
+                        <p class="small text-muted">{{ medicine.description|truncate(80) }}</p>
+                    </div>
+                    <div class="d-grid">
+                        <a href="{{ url_for('medicine_detail', medicine_id=medicine.id) }}" class="btn btn-info btn-sm">
+                            <i class="fas fa-info-circle me-1"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="text-center mt-5 fade-in">
+        <a href="{{ url_for('medicines') }}" class="btn btn-outline-info btn-lg px-5 hover-lift">
+            <i class="fas fa-pills me-2"></i> Browse All Medicines
+        </a>
+    </div>
+</div>
+
+<!-- Why Choose Us -->
+<div class="container px-4 py-5 page-transition-wrapper">
+    <div class="text-center mb-5 fade-in">
+        <h2 class="display-5 fw-bold">Why Choose HealthCare Portal</h2>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">We're committed to providing the best healthcare experience</p>
+        </div>
+    </div>
+    
+    <div class="row g-4 py-3">
+        <div class="col-md-3 stagger-item fade-in">
+            <div class="card border-0 shadow-sm h-100 text-center p-4 hover-lift">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 mb-4 mx-auto hover-rotate-icon" style="width: 80px; height: 80px;">
+                    <i class="fas fa-certificate fa-2x text-info"></i>
+                </div>
+                <h4 class="fs-4 fw-bold mb-3">Certified Doctors</h4>
+                <p class="mb-0">All our doctors are certified professionals with years of experience in their respective fields.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 stagger-item fade-in">
+            <div class="card border-0 shadow-sm h-100 text-center p-4 hover-lift">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 mb-4 mx-auto hover-rotate-icon" style="width: 80px; height: 80px;">
+                    <i class="fas fa-shipping-fast fa-2x text-info"></i>
+                </div>
+                <h4 class="fs-4 fw-bold mb-3">Quick Delivery</h4>
+                <p class="mb-0">Get your medicines delivered to your doorstep within 24-48 hours of placing your order.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 stagger-item fade-in">
+            <div class="card border-0 shadow-sm h-100 text-center p-4 hover-lift">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 mb-4 mx-auto hover-rotate-icon" style="width: 80px; height: 80px;">
+                    <i class="fas fa-lock fa-2x text-info"></i>
+                </div>
+                <h4 class="fs-4 fw-bold mb-3">Secure Platform</h4>
+                <p class="mb-0">Your health data and personal information are always protected with the highest security standards.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-3 stagger-item fade-in">
+            <div class="card border-0 shadow-sm h-100 text-center p-4 hover-lift">
+                <div class="feature-icon d-inline-flex align-items-center justify-content-center rounded-circle bg-info bg-opacity-10 p-3 mb-4 mx-auto hover-rotate-icon" style="width: 80px; height: 80px;">
+                    <i class="fas fa-headset fa-2x text-info"></i>
+                </div>
+                <h4 class="fs-4 fw-bold mb-3">24/7 Support</h4>
+                <p class="mb-0">Our customer support team is available round the clock to assist you with any queries or concerns.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Call to Action Banner -->
+    <div class="text-center mt-5 p-5 rounded-3 fade-in" style="background: linear-gradient(135deg, #0d6efd, #0dcaf0);">
+        <div class="col-lg-8 mx-auto">
+            <h2 class="text-white mb-4 pulse-animation">Ready to experience better healthcare?</h2>
+            <p class="text-white mb-4">Join thousands of satisfied users who trust HealthCare Portal for their medical needs</p>
+            {% if not current_user.is_authenticated %}
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                <a href="{{ url_for('register') }}" class="btn btn-light btn-lg px-4 me-sm-3 hover-lift">
+                    <i class="fas fa-user-plus me-2"></i> Create an Account
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4 hover-lift">
+                    <i class="fas fa-sign-in-alt me-2"></i> Login
+                </a>
+            </div>
+            {% else %}
+            <a href="{{ url_for('doctors') }}" class="btn btn-light btn-lg px-5 pulse-animation">
+                <i class="fas fa-stethoscope me-2"></i> Book an Appointment Now
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

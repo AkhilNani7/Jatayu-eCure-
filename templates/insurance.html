@@ -1,0 +1,64 @@
+
+{% extends "base.html" %}
+
+{% block title %}Insurance Application - HealthCare Portal{% endblock %}
+
+{% block content %}
+<div class="container px-4 py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Insurance Application</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">Apply for health, dental, or vision insurance coverage</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form method="POST" action="{{ url_for('submit_insurance_application') }}">
+                        <div class="mb-3">
+                            <label for="policy_type" class="form-label">Policy Type</label>
+                            <select class="form-select" id="policy_type" name="policy_type" required>
+                                <option value="health">Health Insurance</option>
+                                <option value="dental">Dental Insurance</option>
+                                <option value="vision">Vision Insurance</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="coverage_level" class="form-label">Coverage Level</label>
+                            <select class="form-select" id="coverage_level" name="coverage_level" required>
+                                <option value="individual">Individual</option>
+                                <option value="family">Family</option>
+                                <option value="premium">Premium</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="requested_start_date" class="form-label">Requested Start Date</label>
+                            <input type="date" class="form-control" id="requested_start_date" name="requested_start_date" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="policy_duration" class="form-label">Policy Duration (months)</label>
+                            <input type="number" class="form-control" id="policy_duration" name="policy_duration" min="12" max="60" value="12" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-paper-plane me-2"></i>Submit Application
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

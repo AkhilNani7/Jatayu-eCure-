@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Background -->
+  <circle cx="100" cy="100" r="90" fill="#212529" stroke="#0dcaf0" stroke-width="2"/>
+  
+  <!-- Medicine bottle -->
+  <path d="M70 60 h60 v20 q 0,10 -10,10 h-40 q -10,0 -10,-10 z" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  <path d="M80 60 v-15 h40 v15" fill="#343a40" stroke="#6c757d" stroke-width="2"/>
+  <rect x="85" y="45" width="30" height="5" fill="#343a40" stroke="#6c757d" stroke-width="1"/>
+  
+  <!-- Bottle cap -->
+  <path d="M85 38 v7 h30 v-7 q 0,-3 -3,-3 h-24 q -3,0 -3,3 z" fill="#0dcaf0" stroke="#6c757d" stroke-width="1"/>
+  
+  <!-- Bottle label -->
+  <rect x="75" y="65" width="50" height="20" rx="2" ry="2" fill="#495057"/>
+  <line x1="80" y1="70" x2="120" y2="70" stroke="#adb5bd" stroke-width="1"/>
+  <line x1="80" y1="75" x2="115" y2="75" stroke="#adb5bd" stroke-width="1"/>
+  <line x1="80" y1="80" x2="110" y2="80" stroke="#adb5bd" stroke-width="1"/>
+  
+  <!-- Pills -->
+  <ellipse cx="75" cy="120" rx="15" ry="10" fill="#0dcaf0" stroke="#6c757d" stroke-width="1" transform="rotate(-30,75,120)"/>
+  <ellipse cx="90" cy="135" rx="15" ry="10" fill="#0dcaf0" stroke="#6c757d" stroke-width="1" transform="rotate(30,90,135)"/>
+  <ellipse cx="115" cy="120" rx="15" ry="10" fill="#0dcaf0" stroke="#6c757d" stroke-width="1" transform="rotate(60,115,120)"/>
+  <ellipse cx="130" cy="145" rx="15" ry="10" fill="#0dcaf0" stroke="#6c757d" stroke-width="1" transform="rotate(0,130,145)"/>
+  
+  <!-- Capsules -->
+  <path d="M50 140 q 0,-7 7,-7 h16 q 7,0 7,7 q 0,7 -7,7 h-16 q -7,0 -7,-7" fill="#0dcaf0" stroke="#6c757d" stroke-width="1"/>
+  <path d="M50 140 q 0,7 7,7 h16 q 7,0 7,-7" fill="#343a40" stroke="#6c757d" stroke-width="1"/>
+  
+  <!-- Medical cross symbol -->
+  <rect x="130" y="105" width="20" height="5" fill="#f8f9fa"/>
+  <rect x="137.5" y="97.5" width="5" height="20" fill="#f8f9fa"/>
+</svg>

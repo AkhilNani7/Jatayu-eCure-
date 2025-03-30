@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - HealthCare Portal{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Checkout</h1>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Shipping Information</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('checkout') }}" method="post" id="checkout-form">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ current_user.first_name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ current_user.last_name }}" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" value="{{ current_user.phone }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="shipping_address" class="form-label">Shipping Address</label>
+                        <textarea class="form-control" id="shipping_address" name="shipping_address" rows="3" required>{{ current_user.address }}</textarea>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h4 class="mb-3">Payment Information</h4>
+                    <div class="mb-3">
+                        <label for="payment_method" class="form-label">Payment Method</label>
+                        <select class="form-select" id="payment_method" name="payment_method" required>
+                            <option value="">Select payment method</option>
+                            <option value="credit_card">Credit Card</option>
+                            <option value="debit_card">Debit Card</option>
+                            <option value="paypal">PayPal</option>
+                            <option value="cash_on_delivery">Cash on Delivery</option>
+                        </select>
+                    </div>
+                    
+                    <div id="credit-card-details" style="display: none;">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="card_number" class="form-label">Card Number</label>
+                                <input type="text" class="form-control" id="card_number" placeholder="1234 5678 9012 3456">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="card_name" class="form-label">Name on Card</label>
+                                <input type="text" class="form-control" id="card_name">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="expiry" class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" id="expiry" placeholder="MM/YY">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cvv" class="form-label">CVV</label>
+                                <input type="text" class="form-control" id="cvv" placeholder="123">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% set prescription_required = False %}
+                    {% for item in cart_items %}
+                        {% if item.medicine.requires_prescription %}
+                            {% set prescription_required = True %}
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if prescription_required %}
+                    <hr class="my-4">
+                    
+                    <h4 class="mb-3">Prescription Information</h4>
+                    <div class="alert alert-info">
+                        <i class="fas fa-prescription me-2"></i>One or more items in your cart require a valid prescription.
+                    </div>
+                    <div class="mb-3">
+                        <label for="prescription_id" class="form-label">Select Prescription</label>
+                        <select class="form-select" id="prescription_id" name="prescription_id">
+                            <option value="">Select a prescription</option>
+                            <!-- If you have prescriptions stored for the user, list them here -->
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <p>Don't have a prescription? <a href="{{ url_for('doctors') }}">Book an appointment</a> with one of our doctors.</p>
+                    </div>
+                    {% endif %}
+                    
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Order Summary</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Items ({{ cart_items|length }})</span>
+                    <span>${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-3">
+                    <span>Shipping</span>
+                    <span>$0.00</span>
+                </div>
+                <hr>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold">Total</span>
+                    <span class="fw-bold">${{ "%.2f"|format(total) }}</span>
+                </div>
+                <div class="d-grid">
+                    <button type="submit" form="checkout-form" class="btn btn-info">Place Order</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h4>Items in Cart</h4>
+            </div>
+            <div class="card-body p-0">
+                <ul class="list-group list-group-flush">
+                    {% for item in cart_items %}
+                    <li class="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                            <h6 class="my-0">{{ item.medicine.name }}</h6>
+                            <small class="text-muted">Quantity: {{ item.quantity }}</small>
+                            {% if item.medicine.requires_prescription %}
+                            <span class="badge bg-warning text-dark ms-1">Prescription</span>
+                            {% endif %}
+                        </div>
+                        <span class="text-muted">${{ "%.2f"|format(item.medicine.price * item.quantity) }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const paymentMethodSelect = document.getElementById('payment_method');
+        const creditCardDetails = document.getElementById('credit-card-details');
+        
+        if (paymentMethodSelect && creditCardDetails) {
+            paymentMethodSelect.addEventListener('change', function() {
+                if (this.value === 'credit_card' || this.value === 'debit_card') {
+                    creditCardDetails.style.display = 'block';
+                } else {
+                    creditCardDetails.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

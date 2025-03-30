@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - HealthCare Portal{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">My Profile</h1>
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <!-- User Profile Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Account Information</h4>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <div class="rounded-circle bg-secondary d-inline-flex justify-content-center align-items-center" style="width: 120px; height: 120px;">
+                        <i class="fas fa-user fa-4x text-info"></i>
+                    </div>
+                </div>
+                <h3>{{ user.first_name or "" }} {{ user.last_name or "" }}</h3>
+                <p class="text-muted">@{{ user.username }}</p>
+                <p><i class="fas fa-envelope me-2"></i>{{ user.email }}</p>
+                {% if user.phone %}
+                <p><i class="fas fa-phone me-2"></i>{{ user.phone }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quick Links -->
+        <div class="card">
+            <div class="card-header">
+                <h4>Quick Links</h4>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    <a href="{{ url_for('doctors') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-user-md me-2"></i>Find Doctors</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="{{ url_for('medicines') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-pills me-2"></i>Buy Medicines</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="{{ url_for('appointments') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-calendar-check me-2"></i>My Appointments</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a href="{{ url_for('cart') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <span><i class="fas fa-shopping-cart me-2"></i>My Cart</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Edit Profile Form -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Edit Profile</h4>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('profile') }}" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="first_name" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name or '' }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="last_name" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name or '' }}">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" value="{{ user.email }}" disabled>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone or '' }}">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="date_of_birth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" value="{{ user.date_of_birth|format_datetime('%Y-%m-%d') if user.date_of_birth else '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">{{ user.address or '' }}</textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-info">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Recent Appointments</h4>
+                        <a href="{{ url_for('appointments') }}" class="btn btn-outline-info btn-sm">View All</a>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for appointment in appointments %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Dr. {{ appointment.doctor.first_name }} {{ appointment.doctor.last_name }}</h6>
+                                    <small>{{ appointment.appointment_date|format_datetime('%b %d') }}</small>
+                                </div>
+                                <p class="mb-1 text-muted">{{ appointment.doctor.specialty }}</p>
+                                <small>
+                                    <span class="badge {% if appointment.status == 'scheduled' %}bg-success{% elif appointment.status == 'completed' %}bg-info{% else %}bg-warning{% endif %}">
+                                        {{ appointment.status|capitalize }}
+                                    </span>
+                                    {% if appointment.is_virtual %}
+                                    <span class="badge bg-secondary">Virtual</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            {% else %}
+                            <div class="list-group-item text-center py-3">
+                                <p class="text-muted mb-0">No recent appointments</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4>Recent Orders</h4>
+                        <button class="btn btn-outline-info btn-sm" disabled>View All</button>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush">
+                            {% for order in orders %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">Order #{{ order.id }}</h6>
+                                    <small>{{ order.order_date|format_datetime('%b %d') }}</small>
+                                </div>
+                                <p class="mb-1">${{ "%.2f"|format(order.total_amount) }}</p>
+                                <small>
+                                    <span class="badge {% if order.status == 'delivered' %}bg-success{% elif order.status == 'shipped' %}bg-info{% elif order.status == 'processing' %}bg-secondary{% else %}bg-warning{% endif %}">
+                                        {{ order.status|capitalize }}
+                                    </span>
+                                </small>
+                            </div>
+                            {% else %}
+                            <div class="list-group-item text-center py-3">
+                                <p class="text-muted mb-0">No recent orders</p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
